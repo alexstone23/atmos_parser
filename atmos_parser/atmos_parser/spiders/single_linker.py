@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from scrapy.spiders import CrawlSpider
+from scrapy.spiders import CrawlSpider, Request
 from ..items import AtmosParserSingleItem
 import re
 
@@ -23,5 +23,9 @@ class SingleLinkerSpider(CrawlSpider):
             items['biography'] = biography
             phone = r.xpath('//div[@id="contact_info"]//text()').extract()
             phone = ''.join(phone)
-            items['phone'] = re.findall('([\S][\d][\S]??\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4})', phone)
+            phone = re.findall('\D?(\d{0,3}?)\D{0,2}(\d{3})?\D{0,2}(\d{3})\D?(\d{4})', phone)
+            try:
+                items['phone'] = '-'.join(phone[0])
+            except:
+                items['phone'] = ''
             yield items

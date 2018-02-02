@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 from scrapy.spiders import CrawlSpider
+from scrapy import Request
 from ..items import AtmosParserSingleItemExtended
 import re
 
 
-class SingleLinkerSpider(CrawlSpider):
-    name = 'single_linker_extended'
+class PeopleParserSpider(CrawlSpider):
+    name = 'people_parser'
     allowed_domains = ['atmos.illinois.edu']
-    start_urls = ['https://www.atmos.illinois.edu/cms/One.aspx?portalId=127458&pageId=151114']
+    start_urls = ['https://www.atmos.illinois.edu/cms/One.aspx?portalId=127458&pageId=127468']
+    extracted_links = []
     custom_settings = {
         'FEED_EXPORT_FIELDS': ['full_name', 'titles', 'image_link', 'phone', 'email', 'website', 'education', 'biography']
     }
 
-    def parse(self, response):
+    def parse_items(self, response):
         for r in response.xpath('//div[@id="page_content"]'):
             items = AtmosParserSingleItemExtended()
             titles = r.xpath('//div[@id="titles"]/ul/li/text()').extract()
@@ -38,3 +40,7 @@ class SingleLinkerSpider(CrawlSpider):
                 items['phone'] = ''
             items['education'] = r.xpath('//div[@id="education"]/ul/li/text()').extract()
             yield items
+
+    def parse(self, response):
+        for r in response.xpath('//a[@class="link"]/@href').extract():
+            yield Request(response.urljoin(r), callback=self.parse_items)
