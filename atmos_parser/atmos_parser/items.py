@@ -13,3 +13,14 @@ class AtmosParserSingleItem(scrapy.Item):
     biography = scrapy.Field()
     phone = scrapy.Field()
     email = scrapy.Field()
+
+
+class AtmosParserSingleItemExtended(scrapy.Item):
+    titles = scrapy.Field()
+    image_link = scrapy.Field()
+    full_name = scrapy.Field()
+    biography = scrapy.Field()
+    phone = scrapy.Field()
+    email = scrapy.Field()
+    website = scrapy.Field()
+    education = scrapy.Field()
